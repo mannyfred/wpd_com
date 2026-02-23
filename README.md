@@ -5,6 +5,8 @@ Supports enumeration and file listing.
 
 Currently supports retrieving extra properties, but not executing commands (too cancerous).
 
+Might not work with phones, haven't tested.
+
 ### Usage
 
 ```

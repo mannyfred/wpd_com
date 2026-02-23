@@ -267,6 +267,7 @@ _End:
     return hr;
 }
 
+
 HRESULT get_listing( wchar_t* lpID, IPortableDeviceContent* content, int max_depth, int current_depth, int* cnt, int threshold ) {
 
     HRESULT hr;
@@ -330,6 +331,7 @@ _End:
     SAFE_RELEASE_CPP( portDeviceObjectIDs );
     return hr;
 }
+
 
 HRESULT list_files( wchar_t* lpID, bool bImpersonate, datap Parser  ) {
 
@@ -557,7 +559,7 @@ void enum_devices( IPortableDeviceManager* deviceManager, wchar_t** lpMemIDs, bo
         deviceProperties->GetCount( &num_prop );
         BeaconPrintToStreamW( L"[%d] Supported Properties (%d)\n", idx, num_prop );
 
-        for ( int m = 0; m < num_prop; m++) {
+        for ( int m = 0; m < num_prop; m++ ) {
 
             PROPERTYKEY pk = { 0 };
 
