@@ -133,4 +133,4 @@ _Just check `PortableDevice.h`_
 
 ### Acknowledgments
 
-[@joaoviictorti]() for random info nuggets
+[@joaoviictorti](https://github.com/joaoviictorti) for random info nuggets
