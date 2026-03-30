@@ -182,11 +182,9 @@ _End:
 
 HRESULT get_property( wchar_t* lpID, bool bImpersonate, datap Parser ) {
 
-    int         len;
     HRESULT     hr;
     PROPERTYKEY pk_cmd;
     PROPVARIANT pv  = {0};
-    wchar_t*    fmt = nullptr;
 
     IPortableDevice*                portDevice          = nullptr;
     IPortableDeviceValues*          portDeviceValues    = nullptr;
@@ -195,7 +193,7 @@ HRESULT get_property( wchar_t* lpID, bool bImpersonate, datap Parser ) {
     IPortableDeviceKeyCollection*   portDeviceColl      = nullptr;
 
     ULONG access    = BeaconDataInt( &Parser );
-    auto  cmd_guid  = reinterpret_cast<GUID*>( BeaconDataExtract( &Parser, &len ) );
+    auto  cmd_guid  = reinterpret_cast<GUID*>( BeaconDataExtract( &Parser, nullptr ) );
     auto  cmd_id    = BeaconDataInt( &Parser );
 
     if ( FAILED( hr = get_device( lpID, bImpersonate, access, &portDevice ) ) ) {
@@ -237,20 +235,16 @@ HRESULT get_property( wchar_t* lpID, bool bImpersonate, datap Parser ) {
             hr = pv.scode;
             break;
         case VT_LPWSTR:
-            fmt = L"%ws";
-            BeaconPrintToStreamW( fmt, pv.pwszVal );
+            BeaconPrintToStreamW( L"%ws", pv.pwszVal );
             break;
         case VT_UI4:
-            fmt = L"%lu";
-            BeaconPrintToStreamW( fmt, pv.ulVal );
+            BeaconPrintToStreamW( L"%lu", pv.ulVal );
             break;
         case VT_UI8:
-            fmt = L"%llu";
-            BeaconPrintToStreamW( fmt, pv.uhVal );
+            BeaconPrintToStreamW( L"%llu", pv.uhVal );
             break;
         case VT_BOOL:
-            fmt = L"%d";
-            BeaconPrintToStreamW( fmt, pv.boolVal );
+            BeaconPrintToStreamW( L"%d", pv.boolVal );
             break;
         default:
             hr = E_ABORT;
@@ -336,7 +330,6 @@ _End:
 HRESULT list_files( wchar_t* lpID, bool bImpersonate, datap Parser  ) {
 
     int                             recursion,
-                                    parse_len,
                                     loop_cnt = 0;
 
     HRESULT                         hr;
@@ -348,7 +341,7 @@ HRESULT list_files( wchar_t* lpID, bool bImpersonate, datap Parser  ) {
 
     access      = BeaconDataInt( &Parser );
     recursion   = BeaconDataInt( &Parser );
-    path        = (wchar_t*)BeaconDataExtract( &Parser, &parse_len );
+    path        = (wchar_t*)BeaconDataExtract( &Parser, nullptr );
 
     if ( !path ) {
         path = WPD_DEVICE_OBJECT_ID;
@@ -375,7 +368,7 @@ _End:
 
 void enum_devices( IPortableDeviceManager* deviceManager, wchar_t** lpMemIDs, bool bImpersonate, DWORD cnt ) {
 
-    auto get_info = [ &deviceManager, &lpMemIDs ]( int idx, wchar_t* output, HRESULT (IPortableDeviceManager::*fn)(const wchar_t*, wchar_t*, DWORD*) ) -> void {
+    auto get_info = [ &deviceManager, &lpMemIDs ]( int idx, wchar_t* output, decltype( &IPortableDeviceManager::GetDeviceManufacturer ) fn ) -> void {
 
         DWORD       name_len = 0;
         wchar_t*    name = nullptr;
@@ -599,9 +592,9 @@ _End:
     BeaconPrintToStreamW( L"[*] Number of devices: %d\n", cnt );
 
     for ( int i = 0; i < cnt; i++ ) {
-        get_info( i, L"Description", static_cast<HRESULT (IPortableDeviceManager::*)(const wchar_t*, wchar_t*, DWORD*)>(&IPortableDeviceManager::GetDeviceDescription));
-        get_info( i, L"Friendly name", static_cast<HRESULT (IPortableDeviceManager::*)(const wchar_t*, wchar_t*, DWORD*)>(&IPortableDeviceManager::GetDeviceFriendlyName));
-        get_info( i, L"Manufacturer", static_cast<HRESULT (IPortableDeviceManager::*)(const wchar_t*, wchar_t*, DWORD*)>(&IPortableDeviceManager::GetDeviceManufacturer));
+        get_info( i, L"Description", &IPortableDeviceManager::GetDeviceDescription );
+        get_info( i, L"Friendly name", &IPortableDeviceManager::GetDeviceFriendlyName );
+        get_info( i, L"Manufacturer", &IPortableDeviceManager::GetDeviceManufacturer );
         get_capabilities( i );
         BeaconOutputStreamW();
     }

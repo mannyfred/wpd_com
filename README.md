@@ -15,6 +15,7 @@ wpd_com get_prop <device_index> --prop-guid <guid> --prop-id <id> [--imp] [--acc
 wpd_com ls <device_index> [--path <value>] [--recursion <value>] [--imp] [--access 0xXXXX]
 ```
 
+---
 
 Enumerate portable devices, display their functional category, supported commands and properties:
 ```
@@ -51,6 +52,11 @@ Enumerate portable devices, display their functional category, supported command
 ```
 _Returns 0x8002802B when no portable devices found_
 
+> [!NOTE]
+> If `0x8002802B` is not returned, and no output is displayed, it is most likely caused by a funky `Friendly Name` messing up the stream. Comment out the specific lambda invocation and try again
+
+---
+
 List files in specific directory, specify recursion level (default is 2), use impersonation:
 ```
 >>> wpd_com ls 0 --recursion 3 --imp --path E:\iPod_Control\Device
@@ -64,6 +70,8 @@ E:\iPod_Control\Device\Radio\Locals_EU_FM.plist
 E:\iPod_Control\Device\iPodSettings.xml
 ...
 ```
+
+---
 
 Get more properties. WPD_DEVICE_PROPERTIES_V1 - WPD_DEVICE_FIRMWARE_VERSION and use impersonation:
 ```
